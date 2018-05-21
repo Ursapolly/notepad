@@ -3,7 +3,7 @@
 require 'sqlite3'
 
 class Post
-  SQLITE_DB_FILE = 'notepad.db3'.freeze
+  SQLITE_DB_FILE = './notepad.db3'.freeze
 
   def self.post_types
     { 'Memo' => Memo, 'Link' => Link, 'Task' => Task }

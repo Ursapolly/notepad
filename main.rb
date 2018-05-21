@@ -1,9 +1,9 @@
 # encoding: utf-8
 
-require_relative 'post'
-require_relative 'memo'
-require_relative 'link'
-require_relative 'task'
+require_relative 'lib/post'
+require_relative 'lib/memo'
+require_relative 'lib/link'
+require_relative 'lib/task'
 
 
 puts 'Привет, я твой блокнот!\n\nЧто хочешь записать?'
