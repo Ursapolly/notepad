@@ -22,7 +22,14 @@ class Post
     return if id.nil?
     db = SQLite3::Database.open(SQLITE_DB_FILE)
     db.results_as_hash = true
+
+    begin
     result = db.execute('SELECT * FROM posts WHERE rowid = ?', id)
+    rescue SQLite3::SQLException => error
+      puts "Не удалось выполнить запрос в базе #{SQLITE_DB_FILE}"
+      abort error.message
+    end
+
     db.close
     if result.empty?
       puts "Id #{id} не найден в базе"
@@ -42,10 +49,22 @@ class Post
       query += 'WHERE type = :type ' unless type.nil?
       query += 'ORDER by rowid DESC '
       query += 'LIMIT :limit ' unless limit.nil?
+
+    begin
       statement = db.prepare query
+    rescue SQLite3::SQLException => error
+      puts "Не удалось выполнить запро в базе #{SQLITE_DB_FILE}"
+      abort error.message
+    end
+
       statement.bind_param('type', type) unless type.nil?
       statement.bind_param('limit', limit) unless limit.nil?
+    begin
       result = statement.execute!
+    rescue SQLite3::SQLException => error
+      puts "Не удалось выполнить запрос в базе #{SQLITE_DB_FILE}"
+      abort error.message
+    end
 
       statement.close
 
@@ -74,16 +93,23 @@ class Post
     }
   end
 
+
   def save_to_db
     db = SQLite3::Database.open(SQLITE_DB_FILE)
     db.results_as_hash = true
     post_hash = to_db_hash
+
+  begin
     db.execute(
         'INSERT INTO posts (' +
         post_hash.keys.join(', ') +
         ") VALUES (#{('?,' * post_hash.size).chomp(',')})",
         post_hash.values
     )
+  rescue SQLite3::SQLException => error
+    puts "Не удалось выполнить запрос в базе данных #{SQLITE_DB_FILE}"
+    abort error.message
+  end
     insert_row_id = db.last_insert_row_id
     db.close
     insert_row_id
