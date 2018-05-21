@@ -18,25 +18,25 @@ class Post
     @text = []
   end
 
-  def self.find(limit, type, id)
+  def self.find_by_id(id)
+    return if id.nil?
     db = SQLite3::Database.open(SQLITE_DB_FILE)
-
-    if !id.nil?
-      db.results_as_hash = true
-      result = db.execute('SELECT * FROM posts WHERE rowid = ?', id)
-
-      db.close
-
-      if result.empty?
-        puts "Id #{id} не найден в базе"
-        return nil
+    db.results_as_hash = true
+    result = db.execute('SELECT * FROM posts WHERE rowid = ?', id)
+    db.close
+    if result.empty?
+      puts "Id #{id} не найден в базе"
+      return nil
       else
         result = result[0]
         post = create(result['type'])
         post.load_data(result)
         post
-      end
-    else
+    end
+  end
+
+  def self.find_all(limit, type)
+    db = SQLite3::Database.open(SQLITE_DB_FILE)
       db.results_as_hash = false
       query = 'SELECT rowid, * FROM posts '
       query += 'WHERE type = :type ' unless type.nil?
@@ -52,7 +52,6 @@ class Post
       db.close
 
       result
-    end
   end
 
   def read_from_console
