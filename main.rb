@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative 'lib/post'
 require_relative 'lib/memo'
 require_relative 'lib/link'
